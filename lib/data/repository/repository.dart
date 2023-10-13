@@ -182,19 +182,19 @@ class RepoImpl implements Repository {
         DisneyCharacter character = result.asRight();
         int vote = character.vote! + 1;
 
-        int moringVotes = 0;
-        int noonVotes = 0;
-        int eveningVotes = 0;
-        int nightVotes = 0;
+        int moringVotes = character.morningVotes!;
+        int noonVotes = character.noonVotes!;
+        int eveningVotes = character.eveningVotes!;
+        int nightVotes = character.nightVotes!;
 
         if (request.voteTime == 'morning') {
-          moringVotes == vote;
+          moringVotes == moringVotes + 1;
         } else if (request.voteTime == 'noon') {
-          noonVotes = vote;
+          noonVotes = noonVotes + 1;
         } else if (request.voteTime == 'evening') {
-          eveningVotes = vote;
+          eveningVotes = eveningVotes + 1;
         } else {
-          nightVotes = vote;
+          nightVotes = nightVotes + 1;
         }
 
         //update character votes
