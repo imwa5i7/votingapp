@@ -85,6 +85,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 _currentIndex = 1;
                 _title = 'Reports';
               });
+              Navigator.pop(context);
             },
           ),
           ListTile(
