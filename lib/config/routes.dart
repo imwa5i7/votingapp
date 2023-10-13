@@ -7,8 +7,8 @@ import 'package:disney_voting/ui/screens/dashboard/dashboard_screen.dart';
 import 'package:disney_voting/ui/screens/voting/voting_screen.dart';
 import 'package:flutter/material.dart';
 
-import '../ui/screens/login_screen.dart';
-import '../ui/screens/register_screen.dart';
+import '../ui/screens/auth/login_screen.dart';
+import '../ui/screens/auth/register_screen.dart';
 
 class Routes {
   static const String login = "/login";

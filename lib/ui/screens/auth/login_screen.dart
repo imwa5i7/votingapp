@@ -7,9 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../config/routes.dart';
 import '../../../config/validator.dart';
-import '../widgets/custom_appbar.dart';
-import '../widgets/custom_button.dart';
-import '../widgets/custom_field.dart';
+import '../../widgets/custom_appbar.dart';
+import '../../widgets/custom_button.dart';
+import '../../widgets/custom_field.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

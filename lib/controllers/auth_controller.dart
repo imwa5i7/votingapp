@@ -29,6 +29,16 @@ class AuthController extends BaseController {
     }
   }
 
+  resetPassword(String email) async {
+    setState(States.buttonLoading(Constants.loading));
+    final result = await _repository.resetPassword(email);
+    if (result.isRight()) {
+      setState(States.completed(result.asRight()));
+    } else {
+      setState(States.error(result.asLeft()));
+    }
+  }
+
   Future<bool> signOut() async {
     final result = await _repository.signOut();
     if (result.isRight()) {

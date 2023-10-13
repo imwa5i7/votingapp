@@ -8,9 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../config/routes.dart';
 import '../../../config/validator.dart';
-import '../../controllers/states.dart';
-import '../widgets/custom_button.dart';
-import '../widgets/custom_field.dart';
+import '../../../controllers/states.dart';
+import '../../widgets/custom_button.dart';
+import '../../widgets/custom_field.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});

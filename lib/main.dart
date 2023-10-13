@@ -3,7 +3,6 @@ import 'package:disney_voting/controllers/characters_controller.dart';
 import 'package:disney_voting/controllers/voting_controller.dart';
 import 'package:disney_voting/data/repository/repository.dart';
 import 'package:disney_voting/data/requests/requests.dart';
-import 'package:disney_voting/ui/screens/login_screen.dart';
 import 'package:disney_voting/ui/screens/dashboard/dashboard_screen.dart';
 import 'package:disney_voting/ui/screens/voting/voting_screen.dart';
 import 'package:firebase_core/firebase_core.dart';

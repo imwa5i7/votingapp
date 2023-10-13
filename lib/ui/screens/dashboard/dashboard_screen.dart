@@ -3,9 +3,11 @@
 import 'dart:developer';
 
 import 'package:disney_voting/controllers/auth_controller.dart';
+import 'package:disney_voting/ui/screens/auth/reset_password.dart';
 import 'package:disney_voting/ui/screens/dashboard/components/character/characters.dart';
 import 'package:disney_voting/ui/screens/dashboard/components/report/report.dart';
 import 'package:disney_voting/ui/widgets/custom_appbar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -23,9 +25,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
   final List<Widget> _widgetList = [
     const CharactersWidget(),
     const ReportsWidget(),
+    const ResetPasswordScreen(),
   ];
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   String _title = 'Characters';
+  User? currentUser = instance<FirebaseAuth>().currentUser;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,20 +41,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
           Container(
               height: Sizes.s80,
               alignment: Alignment.center,
-              child: const Column(
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Wasil Khan',
-                    style: TextStyle(
+                    currentUser != null
+                        ? currentUser!.displayName!
+                        : 'Wasil Khan',
+                    style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Palette.primary,
                         fontSize: Sizes.s20),
                   ),
                   Text(
-                    'imwasil@gmail.com',
-                    style:
-                        TextStyle(color: Palette.primary, fontSize: Sizes.s12),
+                    currentUser != null
+                        ? currentUser!.email!
+                        : 'imwasil@gmail.com',
+                    style: const TextStyle(
+                        color: Palette.primary, fontSize: Sizes.s12),
                   ),
                 ],
               )),
@@ -75,6 +84,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
               setState(() {
                 _currentIndex = 1;
                 _title = 'Reports';
+              });
+            },
+          ),
+          ListTile(
+            title: const Text('Change Password'),
+            leading: const Icon(Icons.exit_to_app),
+            titleTextStyle: const TextStyle(
+                fontWeight: FontWeight.bold, color: Palette.primary),
+            onTap: () async {
+              setState(() {
+                _currentIndex = 2;
+                _title = 'Change Password';
               });
               Navigator.pop(context);
             },

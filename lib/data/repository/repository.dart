@@ -21,6 +21,7 @@ abstract class Repository {
   Future<Either<String, List<DisneyCharacter>>> getCharacters();
   Future<Either<String, DisneyCharacter>> getCharactersById(String id);
   Future<Either<String, String>> vote(VotingRequest request);
+  Future<Either<String, String>> resetPassword(String email);
 }
 
 class RepoImpl implements Repository {
@@ -219,6 +220,17 @@ class RepoImpl implements Repository {
         return const Left('Problem with voting');
       }
     } catch (err) {
+      return Left(err.toString());
+    }
+  }
+
+  @override
+  Future<Either<String, String>> resetPassword(String email) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+      return const Right('Check your Email!');
+    } catch (err) {
+      print(err);
       return Left(err.toString());
     }
   }
