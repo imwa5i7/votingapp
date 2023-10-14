@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import '../../config/config.dart';
 import 'dart:io';
 
-import 'package:flutter/material.dart';
 
 class CameraPlaceholderWidget extends StatelessWidget {
   final Function() onTap;

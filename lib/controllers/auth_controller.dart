@@ -29,9 +29,9 @@ class AuthController extends BaseController {
     }
   }
 
-  resetPassword(String email) async {
+  updatePassword(String email) async {
     setState(States.buttonLoading(Constants.loading));
-    final result = await _repository.resetPassword(email);
+    final result = await _repository.updatePassword(email);
     if (result.isRight()) {
       setState(States.completed(result.asRight()));
     } else {

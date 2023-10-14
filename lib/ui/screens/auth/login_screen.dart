@@ -24,6 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool _isPassword = true;
 
   @override
   Widget build(BuildContext context) {
@@ -50,9 +51,18 @@ class _LoginScreenState extends State<LoginScreen> {
                 CustomTextFormField(
                   controller: _passwordController,
                   hint: 'Password',
+                  isPassword: _isPassword,
+                  suffix: IconButton(
+                    icon: Icon(
+                        _isPassword ? Icons.visibility : Icons.visibility_off),
+                    onPressed: () {
+                      setState(() {
+                        _isPassword = !_isPassword;
+                      });
+                    },
+                  ),
                   validator: (val) => Validator.passwordCorrect(val),
                   keyboard: TextInputType.visiblePassword,
-                  isPassword: true,
                 ),
                 const SizedBox(height: 20),
                 Consumer<AuthController>(builder: (context, auth, child) {

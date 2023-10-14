@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import '../../../../../../data/responses/responses.dart';
 
 class Top5BarChart extends StatefulWidget {
-  final List<DisneyCharacter> charList;
+  final List<Voting> charList;
   const Top5BarChart({super.key, required this.charList});
 
   final shadowColor = const Color(0xFFCCCCCC);
@@ -96,7 +96,7 @@ class _Top5BarChartState extends State<Top5BarChart> {
                       child: _IconWidget(
                         color: dataList[index].color,
                         isSelected: touchedGroupIndex == index,
-                        imageUrl: widget.charList[index].image,
+                        imageUrl: widget.charList[index].character!.image,
                       ),
                     );
                   },
@@ -114,11 +114,16 @@ class _Top5BarChartState extends State<Top5BarChart> {
               ),
             ),
             barGroups: [
-              _BarData(Colors.green, widget.charList[0].vote!.toDouble(), 0),
-              _BarData(Colors.green, widget.charList[1].vote!.toDouble(), 0),
-              _BarData(Colors.green, widget.charList[2].vote!.toDouble(), 0),
-              _BarData(Colors.green, widget.charList[3].vote!.toDouble(), 0),
-              _BarData(Colors.green, widget.charList[4].vote!.toDouble(), 0),
+              _BarData(Colors.green,
+                  widget.charList[0].character!.vote!.toDouble(), 0),
+              _BarData(Colors.green,
+                  widget.charList[1].character!.vote!.toDouble(), 0),
+              _BarData(Colors.green,
+                  widget.charList[2].character!.vote!.toDouble(), 0),
+              _BarData(Colors.green,
+                  widget.charList[3].character!.vote!.toDouble(), 0),
+              _BarData(Colors.green,
+                  widget.charList[4].character!.vote!.toDouble(), 0),
             ].asMap().entries.map((e) {
               final index = e.key;
               final data = e.value;

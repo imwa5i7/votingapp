@@ -52,7 +52,7 @@ class RouteGenerator {
                 ));
 
       case Routes.characters:
-        return MaterialPageRoute(builder: (_) => const CharactersWidget());
+        return MaterialPageRoute(builder: (_) => CharactersWidget());
 
       case Routes.reports:
         return MaterialPageRoute(builder: (_) => const ReportsWidget());

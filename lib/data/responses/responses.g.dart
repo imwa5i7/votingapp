@@ -14,10 +14,10 @@ DisneyCharacter _$DisneyCharacterFromJson(Map<String, dynamic> json) =>
       slug: json['char-slug'] as String?,
       image: json['char-image'] as String?,
       vote: json['char-votes'] as int?,
-      morningVotes: json['morning-votes'] ?? 0,
-      nightVotes: json['night-votes'] ?? 0,
-      eveningVotes: json['evening-votes'] ?? 0,
-      noonVotes: json['noon-votes'] ?? 0,
+      morningVotes: json['morning-votes'] as int?,
+      nightVotes: json['night-votes'] as int?,
+      eveningVotes: json['evening-votes'] as int?,
+      noonVotes: json['noon-votes'] as int?,
       timestamp: json['creation-date'] as int?,
     );
 
@@ -36,22 +36,19 @@ Map<String, dynamic> _$DisneyCharacterToJson(DisneyCharacter instance) =>
       'creation-date': instance.timestamp,
     };
 
-CharacterVoting _$CharacterVotingFromJson(Map<String, dynamic> json) =>
-    CharacterVoting(
-      id: json['id'] as String?,
-      name: json['char-name'] as String?,
-      charId: json['char-id'] as String?,
-      vote: json['char-votes'] as int?,
+Voting _$CharacterVotingFromJson(Map<String, dynamic> json) => Voting(
+      id: json['voter-id'] as String?,
       voteTime: json['vote-time'] as String?,
       timestamp: json['creation-date'] as int?,
+      character: json['character'] == null
+          ? null
+          : DisneyCharacter.fromJson(json['character'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$CharacterVotingToJson(CharacterVoting instance) =>
+Map<String, dynamic> _$CharacterVotingToJson(Voting instance) =>
     <String, dynamic>{
-      'id': instance.id,
-      'char-id': instance.charId,
-      'char-name': instance.name,
-      'char-votes': instance.vote,
+      'voter-id': instance.id,
       'vote-time': instance.voteTime,
       'creation-date': instance.timestamp,
+      'character': instance.character,
     };

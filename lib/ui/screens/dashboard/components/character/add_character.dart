@@ -1,7 +1,5 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'dart:developer';
-
 import 'package:disney_voting/controllers/characters_controller.dart';
 import 'package:disney_voting/controllers/states.dart';
 import 'package:disney_voting/ui/widgets/app_images.dart';

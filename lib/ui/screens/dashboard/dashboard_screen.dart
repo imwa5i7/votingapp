@@ -3,7 +3,8 @@
 import 'dart:developer';
 
 import 'package:disney_voting/controllers/auth_controller.dart';
-import 'package:disney_voting/ui/screens/auth/reset_password.dart';
+import 'package:disney_voting/controllers/voting_controller.dart';
+import 'package:disney_voting/ui/screens/auth/change_password.dart';
 import 'package:disney_voting/ui/screens/dashboard/components/character/characters.dart';
 import 'package:disney_voting/ui/screens/dashboard/components/report/report.dart';
 import 'package:disney_voting/ui/widgets/custom_appbar.dart';
@@ -23,9 +24,9 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   int _currentIndex = 0;
   final List<Widget> _widgetList = [
-    const CharactersWidget(),
+    CharactersWidget(),
     const ReportsWidget(),
-    const ResetPasswordScreen(),
+    const ChangePasswordScreen(),
   ];
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   String _title = 'Characters';
@@ -119,6 +120,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
       appBar: CustomAppbar(
         title: _title,
+        actions: [
+          if (_currentIndex == 1) ...[
+            IconButton(
+              icon: const Icon(Icons.restore),
+              onPressed: () {
+                context.read<VotingController>().setToAll();
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.calendar_month),
+              onPressed: () async {
+                context
+                    .read<VotingController>()
+                    .filerListByCurrentDate(context);
+              },
+            ),
+          ] else
+            ...[],
+        ],
         leading: IconButton(
             onPressed: () {
               _scaffoldKey.currentState!.openDrawer();

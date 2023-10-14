@@ -1,5 +1,3 @@
-import 'dart:io';
-
 class SignUpRequest {
   final String displayName, email, password;
   final int timestamp;
@@ -23,10 +21,20 @@ class AddCharacterRequest {
   final String id;
   String image;
   final String name, desc;
+  final int morningVotes, noonVotes, eveningVotes, nightVotes;
   final int votes, timestamp;
 
   AddCharacterRequest(
-      this.id, this.image, this.name, this.desc, this.votes, this.timestamp);
+      this.id,
+      this.image,
+      this.name,
+      this.desc,
+      this.votes,
+      this.morningVotes,
+      this.noonVotes,
+      this.eveningVotes,
+      this.nightVotes,
+      this.timestamp);
 
   AddCharacterRequest copyWith(
       {String? id,
@@ -34,6 +42,10 @@ class AddCharacterRequest {
       String? name,
       String? desc,
       int? votes,
+      int? morningVotes,
+      int? noonVotes,
+      int? eveningVotes,
+      int? nightVotes,
       int? timestamp}) {
     return AddCharacterRequest(
         id ?? this.id,
@@ -41,6 +53,10 @@ class AddCharacterRequest {
         name ?? this.name,
         desc ?? this.desc,
         votes ?? this.votes,
+        morningVotes ?? this.morningVotes,
+        noonVotes ?? this.noonVotes,
+        eveningVotes ?? this.eveningVotes,
+        nightVotes ?? this.nightVotes,
         timestamp ?? this.timestamp);
   }
 
@@ -52,6 +68,10 @@ class AddCharacterRequest {
       'char-slug': name.toLowerCase().replaceAll(' ', '-').toString(),
       'char-image': image,
       'char-votes': votes,
+      'morning-votes': morningVotes,
+      'noon-votes': noonVotes,
+      'evening-votes': eveningVotes,
+      'night-votes': nightVotes,
       'creation-date': timestamp,
     };
   }
@@ -59,38 +79,31 @@ class AddCharacterRequest {
 
 class VotingRequest {
   final String id;
-  final String charId;
-  final String charName;
-  final int charVotes;
   final String voteTime;
   final int timestamp;
-  VotingRequest(this.id, this.charId, this.charName, this.charVotes,
-      this.voteTime, this.timestamp);
+  final AddCharacterRequest character;
+  VotingRequest(this.id, this.voteTime, this.timestamp, this.character);
 
-  VotingRequest copyWith(
-      {String? id,
-      String? charId,
-      String? charName,
-      String? voteTime,
-      int? charVotes,
-      int? timestamp}) {
+  VotingRequest copyWith({
+    String? id,
+    String? voteTime,
+    int? timestamp,
+    AddCharacterRequest? character,
+  }) {
     return VotingRequest(
-        id ?? this.id,
-        charId ?? this.charId,
-        charName ?? this.charName,
-        charVotes ?? this.charVotes,
-        voteTime ?? this.voteTime,
-        timestamp ?? this.timestamp);
+      id ?? this.id,
+      voteTime ?? this.voteTime,
+      timestamp ?? this.timestamp,
+      character ?? this.character,
+    );
   }
 
   Map<String, dynamic> toMap() {
     return {
       'voter-id': id,
-      'char-id': charId,
-      'char-name': charName,
-      'char-votes': charVotes,
       'vote-time': voteTime,
       'creation-date': timestamp,
+      'character': character.toMap(),
     };
   }
 }

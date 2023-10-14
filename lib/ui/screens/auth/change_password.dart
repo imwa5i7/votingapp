@@ -1,33 +1,36 @@
+// ignore_for_file: use_build_context_synchronously, prefer_const_constructors
+
 import 'dart:developer';
 
 import 'package:disney_voting/config/palette.dart';
 import 'package:disney_voting/config/values.dart';
 import 'package:disney_voting/controllers/auth_controller.dart';
 import 'package:disney_voting/controllers/states.dart';
-import 'package:disney_voting/data/requests/requests.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../config/config.dart';
-import '../../../config/routes.dart';
 import '../../../config/validator.dart';
-import '../../widgets/custom_appbar.dart';
 import '../../widgets/custom_button.dart';
 import '../../widgets/custom_field.dart';
 
-class ResetPasswordScreen extends StatefulWidget {
-  const ResetPasswordScreen({super.key});
+class ChangePasswordScreen extends StatefulWidget {
+  const ChangePasswordScreen({super.key});
 
   @override
   State<StatefulWidget> createState() {
-    return _ResetPasswordScreenState();
+    return _ChangePasswordScreenState();
   }
 }
 
-class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
-  final TextEditingController _emailController = TextEditingController();
+class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
+  final TextEditingController _passController = TextEditingController();
+  final TextEditingController _confirmPassController = TextEditingController();
+
   User? currentUser = instance<FirebaseAuth>().currentUser;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool isPassword = true;
+  bool isPasswordConfirm = true;
 
   @override
   Widget build(BuildContext context) {
@@ -44,12 +47,41 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 const SizedBox(height: 20),
                 // if (currentUser == null)
                 CustomTextFormField(
-                  controller: _emailController,
-                  hint: 'Email',
-                  validator: (val) => Validator.validateEmail(val!),
+                  controller: _passController,
+                  hint: 'New Password',
+                  isPassword: isPassword,
+                  suffix: IconButton(
+                    icon: Icon(
+                        isPassword ? Icons.visibility : Icons.visibility_off),
+                    onPressed: () {
+                      setState(() {
+                        isPassword = !isPassword;
+                      });
+                    },
+                  ),
+                  validator: (val) => Validator.passwordCorrect(val!),
                   keyboard: TextInputType.emailAddress,
                 ),
                 const SizedBox(height: 20),
+                CustomTextFormField(
+                  controller: _confirmPassController,
+                  hint: 'Confirm Password',
+                  isPassword: isPasswordConfirm,
+                  suffix: IconButton(
+                    icon: Icon(isPasswordConfirm
+                        ? Icons.visibility
+                        : Icons.visibility_off),
+                    onPressed: () {
+                      setState(() {
+                        isPasswordConfirm = !isPasswordConfirm;
+                      });
+                    },
+                  ),
+                  validator: (val) => val! == _passController.text
+                      ? null
+                      : 'Passwords didn\'t matched',
+                  keyboard: TextInputType.emailAddress,
+                ),
                 const SizedBox(height: 20),
                 Consumer<AuthController>(builder: (context, auth, child) {
                   return auth.states.status == Status.buttonLoading
@@ -60,7 +92,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           onPressed: _validateAndSend,
                           width: double.infinity,
                           marginHorizontal: Sizes.s20,
-                          child: const Text('Change Password'),
+                          child: const Text('Update Password'),
                         );
                 }),
               ],
@@ -77,11 +109,15 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     }
     _formKey.currentState!.save();
     final AuthController controller = context.read<AuthController>();
-    // log(currentUser!.email!);
-    await controller.resetPassword(_emailController.text);
+    await controller.updatePassword(_passController.text);
     if (mounted && controller.states.status == Status.completed) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(controller.states.data!)));
+      bool success = await context.read<AuthController>().signOut();
+      log(success.toString());
+      if (success) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(controller.states.data!)));
+        Navigator.pop(context);
+      }
     } else {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(controller.states.message!)));

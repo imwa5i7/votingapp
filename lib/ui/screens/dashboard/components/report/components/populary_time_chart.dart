@@ -1,12 +1,11 @@
-import 'dart:developer';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:disney_voting/controllers/voting_controller.dart';
 import 'package:disney_voting/ui/widgets/app_images.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../../../config/config.dart';
+import '../../../../../../controllers/states.dart';
 import '../../../../../../data/responses/responses.dart';
 
 class PopularityTimeChart extends StatefulWidget {
@@ -27,143 +26,150 @@ class PopularityTimeChartState extends State {
           'Character Popularity by Time of Day',
           style: TextStyle(fontWeight: FontWeight.bold, color: Palette.primary),
         ),
-        StreamBuilder<QuerySnapshot>(
-            stream: instance<FirebaseFirestore>()
-                .collection(Constants.charRef)
-                .snapshots(),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasData) {
-                List<DisneyCharacter> votingList = [];
-                for (int i = 0; i < snapshot.data!.docs.length; i++) {
-                  DisneyCharacter character = DisneyCharacter.fromJson(
-                      snapshot.data!.docs[i].data() as Map<String, dynamic>);
-                  votingList.add(character);
-                }
 
-                DisneyCharacter morning = votingList[0];
-                DisneyCharacter noon = votingList[0];
-                DisneyCharacter evening = votingList[0];
-                DisneyCharacter night = votingList[0];
+        // DisneyCharacter morning = votingList[0];
+        // DisneyCharacter noon = votingList[0];
+        // DisneyCharacter evening = votingList[0];
+        // DisneyCharacter night = votingList[0];
 
-                for (var i = 0; i < votingList.length; i++) {
-                  if (votingList[i].morningVotes! > morning.morningVotes!) {
-                    morning = votingList[i];
-                  }
-                  if (votingList[i].noonVotes! > noon.noonVotes!) {
-                    noon = votingList[i];
-                  }
-                  if (votingList[i].eveningVotes! > evening.eveningVotes!) {
-                    evening = votingList[i];
-                  }
-                  if (votingList[i].nightVotes! > night.nightVotes!) {
-                    night = votingList[i];
-                  }
-                }
-
-                log(votingList.length.toString());
-                return Column(
-                  children: [
-                    const SizedBox(
-                      height: 18,
-                    ),
-                    Row(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: Sizes.s20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Indicator(
-                                color: Colors.blue,
-                                text: 'Morning',
-                                isSquare: false,
-                                size: touchedIndex == 0 ? 18 : 16,
-                                textColor: touchedIndex == 0
-                                    ? Palette.primary
-                                    : Palette.disable,
-                              ),
-                              Indicator(
-                                color: Colors.yellow,
-                                text: 'Afternoon',
-                                isSquare: false,
-                                size: touchedIndex == 1 ? 18 : 16,
-                                textColor: touchedIndex == 1
-                                    ? Palette.primary
-                                    : Palette.disable,
-                              ),
-                              Indicator(
-                                color: Colors.purple,
-                                text: 'Evening',
-                                isSquare: false,
-                                size: touchedIndex == 2 ? 18 : 16,
-                                textColor: touchedIndex == 2
-                                    ? Palette.primary
-                                    : Palette.disable,
-                              ),
-                              Indicator(
-                                color: Colors.green,
-                                text: 'Night',
-                                isSquare: false,
-                                size: touchedIndex == 3 ? 18 : 16,
-                                textColor: touchedIndex == 3
-                                    ? Palette.primary
-                                    : Palette.disable,
-                              ),
-                            ],
+        // for (var i = 0; i < votingList.length; i++) {
+        //   if (votingList[i].morningVotes! > morning.morningVotes!) {
+        //     morning = votingList[i];
+        //   }
+        //   if (votingList[i].noonVotes! > noon.noonVotes!) {
+        //     noon = votingList[i];
+        //   }
+        //   if (votingList[i].eveningVotes! > evening.eveningVotes!) {
+        //     evening = votingList[i];
+        //   }
+        //   if (votingList[i].nightVotes! > night.nightVotes!) {
+        //     night = votingList[i];
+        //   }
+        // }
+        const SizedBox(
+          height: 18,
+        ),
+        Column(
+          children: [
+            Consumer<VotingController>(builder: (context, controller, child) {
+              return controller.states.status == Status.completed
+                  ? controller.morning == null ||
+                          controller.noon == null ||
+                          controller.evening == null ||
+                          controller.evening == null
+                      ? AspectRatio(
+                          aspectRatio: 1.1,
+                          child: Center(
+                            child: Text('No date found.',
+                                style: TextStyle(
+                                  color: Colors.grey.shade400,
+                                )),
                           ),
-                        ),
-                        Expanded(
-                          child: AspectRatio(
-                            aspectRatio: 1.1,
-                            child: AspectRatio(
-                              aspectRatio: 1,
-                              child: PieChart(
-                                PieChartData(
-                                  pieTouchData: PieTouchData(
-                                    touchCallback:
-                                        (FlTouchEvent event, pieTouchResponse) {
-                                      setState(() {
-                                        if (!event
-                                                .isInterestedForInteractions ||
-                                            pieTouchResponse == null ||
-                                            pieTouchResponse.touchedSection ==
-                                                null) {
-                                          touchedIndex = -1;
-                                          return;
-                                        }
-                                        touchedIndex = pieTouchResponse
-                                            .touchedSection!
-                                            .touchedSectionIndex;
-                                      });
-                                    },
+                        )
+                      : Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(left: Sizes.s20),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Indicator(
+                                    color: Colors.blue,
+                                    text: 'Morning',
+                                    isSquare: false,
+                                    size: touchedIndex == 0 ? 18 : 16,
+                                    textColor: touchedIndex == 0
+                                        ? Palette.primary
+                                        : Palette.disable,
                                   ),
-                                  borderData: FlBorderData(
-                                    show: false,
+                                  Indicator(
+                                    color: Colors.yellow,
+                                    text: 'Afternoon',
+                                    isSquare: false,
+                                    size: touchedIndex == 1 ? 18 : 16,
+                                    textColor: touchedIndex == 1
+                                        ? Palette.primary
+                                        : Palette.disable,
                                   ),
-                                  sectionsSpace: 0,
-                                  centerSpaceRadius: 0,
-                                  sections: showingSections(
-                                      [morning, noon, evening, night]),
-                                ),
+                                  Indicator(
+                                    color: Colors.purple,
+                                    text: 'Evening',
+                                    isSquare: false,
+                                    size: touchedIndex == 2 ? 18 : 16,
+                                    textColor: touchedIndex == 2
+                                        ? Palette.primary
+                                        : Palette.disable,
+                                  ),
+                                  Indicator(
+                                    color: Colors.green,
+                                    text: 'Night',
+                                    isSquare: false,
+                                    size: touchedIndex == 3 ? 18 : 16,
+                                    textColor: touchedIndex == 3
+                                        ? Palette.primary
+                                        : Palette.disable,
+                                  ),
+                                ],
                               ),
                             ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                );
-              } else {
-                return const SizedBox();
-              }
+                            Expanded(
+                              child: AspectRatio(
+                                aspectRatio: 1.1,
+                                child: Consumer<VotingController>(
+                                    builder: (context, controller, child) {
+                                  return PieChart(
+                                    PieChartData(
+                                      pieTouchData: PieTouchData(
+                                        touchCallback: (FlTouchEvent event,
+                                            pieTouchResponse) {
+                                          setState(() {
+                                            if (!event
+                                                    .isInterestedForInteractions ||
+                                                pieTouchResponse == null ||
+                                                pieTouchResponse
+                                                        .touchedSection ==
+                                                    null) {
+                                              touchedIndex = -1;
+                                              return;
+                                            }
+                                            touchedIndex = pieTouchResponse
+                                                .touchedSection!
+                                                .touchedSectionIndex;
+                                          });
+                                        },
+                                      ),
+                                      borderData: FlBorderData(
+                                        show: false,
+                                      ),
+                                      sectionsSpace: 0,
+                                      centerSpaceRadius: 0,
+                                      sections: showingSections([
+                                        controller.morning!,
+                                        controller.noon!,
+                                        controller.evening!,
+                                        controller.night!,
+                                      ]),
+                                    ),
+                                  );
+                                }),
+                              ),
+                            ),
+                          ],
+                        )
+                  : const AspectRatio(
+                      aspectRatio: 1.1,
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
             }),
+          ],
+        ),
       ],
     );
   }
 
-  List<PieChartSectionData> showingSections(List<DisneyCharacter> popularData) {
+  List<PieChartSectionData> showingSections(List<Voting> popularData) {
     return List.generate(4, (i) {
       final isTouched = i == touchedIndex;
       final fontSize = isTouched ? Sizes.s16 : Sizes.s12;
@@ -175,8 +181,8 @@ class PopularityTimeChartState extends State {
         case 0:
           return PieChartSectionData(
             color: Colors.blue,
-            value: popularData[0].morningVotes!.toDouble(),
-            title: popularData[0].name!.split(' ').first,
+            value: popularData[0].character!.morningVotes!.toDouble(),
+            title: popularData[0].character!.name!.split(' ').first,
             radius: radius,
             titleStyle: TextStyle(
               fontSize: fontSize,
@@ -185,7 +191,7 @@ class PopularityTimeChartState extends State {
               shadows: shadows,
             ),
             badgeWidget: _Badge(
-              popularData[0].image!,
+              popularData[0].character!.image!,
               size: widgetSize,
               borderColor: Colors.blue,
             ),
@@ -194,8 +200,8 @@ class PopularityTimeChartState extends State {
         case 1:
           return PieChartSectionData(
             color: Colors.yellow,
-            value: popularData[1].noonVotes!.toDouble(),
-            title: popularData[1].name!.split(' ').first,
+            value: popularData[1].character!.noonVotes!.toDouble(),
+            title: popularData[1].character!.name!.split(' ').first,
             radius: radius,
             titleStyle: TextStyle(
               fontSize: fontSize,
@@ -204,7 +210,7 @@ class PopularityTimeChartState extends State {
               shadows: shadows,
             ),
             badgeWidget: _Badge(
-              popularData[1].image!,
+              popularData[1].character!.image!,
               size: widgetSize,
               borderColor: Colors.yellow,
             ),
@@ -213,8 +219,8 @@ class PopularityTimeChartState extends State {
         case 2:
           return PieChartSectionData(
             color: Colors.purple,
-            value: popularData[2].eveningVotes!.toDouble(),
-            title: popularData[2].name!.split(' ').first,
+            value: popularData[2].character!.eveningVotes!.toDouble(),
+            title: popularData[2].character!.name!.split(' ').first,
             radius: radius,
             titleStyle: TextStyle(
               fontSize: fontSize,
@@ -223,7 +229,7 @@ class PopularityTimeChartState extends State {
               shadows: shadows,
             ),
             badgeWidget: _Badge(
-              popularData[2].image!,
+              popularData[2].character!.image!,
               size: widgetSize,
               borderColor: Colors.purple,
             ),
@@ -232,8 +238,8 @@ class PopularityTimeChartState extends State {
         case 3:
           return PieChartSectionData(
             color: Colors.green,
-            value: popularData[3].nightVotes!.toDouble(),
-            title: popularData[3].name!.split(' ').first,
+            value: popularData[3].character!.nightVotes!.toDouble(),
+            title: popularData[3].character!.name!.split(' ').first,
             radius: radius,
             titleStyle: TextStyle(
               fontSize: fontSize,
@@ -242,7 +248,7 @@ class PopularityTimeChartState extends State {
               shadows: shadows,
             ),
             badgeWidget: _Badge(
-              popularData[3].image!,
+              popularData[3].character!.image!,
               size: widgetSize,
               borderColor: Colors.green,
             ),

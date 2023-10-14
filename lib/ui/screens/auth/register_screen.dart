@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:disney_voting/config/palette.dart';
 import 'package:disney_voting/config/values.dart';
 import 'package:disney_voting/controllers/auth_controller.dart';
@@ -30,6 +29,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   late double sizeBetween;
+  bool _isPassword = true;
 
   @override
   Widget build(BuildContext context) {
@@ -70,9 +70,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
               CustomTextFormField(
                 controller: _passwordController,
                 hint: 'Password',
+                isPassword: _isPassword,
+                suffix: IconButton(
+                  icon: Icon(
+                      _isPassword ? Icons.visibility : Icons.visibility_off),
+                  onPressed: () {
+                    setState(() {
+                      _isPassword = !_isPassword;
+                    });
+                  },
+                ),
                 validator: (val) => Validator.passwordCorrect(val!),
                 keyboard: TextInputType.visiblePassword,
-                isPassword: true,
               ),
               const SizedBox(height: 20),
               Consumer<AuthController>(builder: (context, auth, child) {

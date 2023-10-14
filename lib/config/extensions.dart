@@ -9,14 +9,18 @@ extension MillisecondsToDate on int {
   Future<String> convertToVoteTime() async {
     DateTime date = DateTime.fromMillisecondsSinceEpoch(this);
 
-    if (date.hour > 4 && date.hour < 13) {
+    if (date.hour > 4 && date.hour <= 12) {
       return 'morning';
-    } else if (date.hour > 11 && date.hour < 18) {
+    } else if (date.hour > 12 && date.hour <= 15) {
       return 'noon';
-    } else if (date.hour > 16 && date.hour < 22) {
+    } else if (date.hour > 15 && date.hour > 21) {
       return 'evening';
     } else {
       return 'night';
     }
+  }
+
+  DateTime toDate() {
+    return DateTime.fromMillisecondsSinceEpoch(this);
   }
 }

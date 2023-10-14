@@ -1,16 +1,13 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:disney_voting/controllers/characters_controller.dart';
-import 'package:disney_voting/ui/screens/dashboard/components/report/components/bar_chart.dart';
+import 'package:disney_voting/controllers/voting_controller.dart';
 import 'package:disney_voting/ui/screens/dashboard/components/report/components/populary_time_chart.dart';
 import 'package:disney_voting/ui/screens/dashboard/components/report/components/top5_chart.dart';
 import 'package:disney_voting/ui/widgets/app_images.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../config/config.dart';
 import '../../../../../controllers/states.dart';
-import '../../../../../data/responses/responses.dart';
 
 class ReportsWidget extends StatefulWidget {
   const ReportsWidget({super.key});
@@ -23,6 +20,8 @@ class _ReportsWidgetState extends State<ReportsWidget> {
   @override
   initState() {
     context.read<CharacterController>().getCharaters();
+    context.read<VotingController>().getVotes();
+
     super.initState();
   }
 
@@ -35,38 +34,25 @@ class _ReportsWidgetState extends State<ReportsWidget> {
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: Sizes.s20),
-              child: Row(
-                children: [
-                  StreamBuilder<QuerySnapshot>(
-                      stream: instance<FirebaseFirestore>()
-                          .collection(Constants.votingRef)
-                          .snapshots(),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          final int totalVotes = snapshot.data!.docs.length;
-                          return Text(
-                            'Total Votes: $totalVotes',
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Palette.primary),
-                          );
-                        }
-                        return const Text('Total Votes: 0',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Palette.primary));
-                      }),
-                  // const Spacer(),
-                  // IconButton(
-                  //   icon: const Icon(Icons.circle_outlined),
-                  //   onPressed: () {},
-                  // ),
-                  // IconButton(
-                  //   icon: const Icon(Icons.calendar_month),
-                  //   onPressed: () {},
-                  // ),
-                ],
-              ),
+              child:
+                  Consumer<VotingController>(builder: (context, vote, child) {
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Total Votes: ${vote.states.status == Status.completed ? vote.currenVotingList.length : 0}',
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, color: Palette.primary),
+                    ),
+                    Text(
+                      vote.selectDateTime == null
+                          ? 'All Time'
+                          : '${vote.selectDateTime!.year}-${vote.selectDateTime!.month}-${vote.selectDateTime!.day}',
+                      style: const TextStyle(color: Palette.primary),
+                    ),
+                  ],
+                );
+              }),
             ),
             const Divider(),
             const Top5Chart(),

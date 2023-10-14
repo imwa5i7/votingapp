@@ -44,28 +44,17 @@ class DisneyCharacter {
 }
 
 @JsonSerializable()
-class CharacterVoting {
-  @JsonKey(name: 'id')
+class Voting {
+  @JsonKey(name: 'voter-id')
   final String? id;
-  @JsonKey(name: 'char-id')
-  final String? charId;
-  @JsonKey(name: 'char-name')
-  final String? name;
-  @JsonKey(name: 'char-votes')
-  final int? vote;
   @JsonKey(name: 'vote-time')
   final String? voteTime;
   @JsonKey(name: 'creation-date')
   final int? timestamp;
+  @JsonKey(name: 'character')
+  final DisneyCharacter? character;
+  Voting({this.id, this.voteTime, this.timestamp, this.character});
 
-  CharacterVoting(
-      {this.id,
-      this.name,
-      this.charId,
-      this.vote,
-      this.voteTime,
-      this.timestamp});
-
-  factory CharacterVoting.fromJson(Map<String, dynamic> json) =>
+  factory Voting.fromJson(Map<String, dynamic> json) =>
       _$CharacterVotingFromJson(json);
 }

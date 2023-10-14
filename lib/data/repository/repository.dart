@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'dart:ffi';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -19,9 +18,12 @@ abstract class Repository {
       AddCharacterRequest request, File? image, String id, String? myImage);
   Future<String?> addImage(File image);
   Future<Either<String, List<DisneyCharacter>>> getCharacters();
+  Future<Either<String, List<Voting>>> getVotes();
+
   Future<Either<String, DisneyCharacter>> getCharactersById(String id);
+
   Future<Either<String, String>> vote(VotingRequest request);
-  Future<Either<String, String>> resetPassword(String email);
+  Future<Either<String, String>> updatePassword(String password);
 }
 
 class RepoImpl implements Repository {
@@ -101,7 +103,7 @@ class RepoImpl implements Repository {
       File? image, String? id, String? myImage) async {
     if (id != null) {
       log(id);
-      request = request.copyWith(id: id, timestamp: int.parse(id!));
+      request = request.copyWith(id: id, timestamp: int.parse(id));
     }
     String? url = image == null ? myImage : await addImage(image);
     if (url != null) {
@@ -137,7 +139,7 @@ class RepoImpl implements Repository {
         throw err;
       });
       return imageUrl;
-    } on FirebaseException catch (err) {
+    } on FirebaseException {
       return null;
     }
   }
@@ -162,6 +164,25 @@ class RepoImpl implements Repository {
   }
 
   @override
+  Future<Either<String, List<Voting>>> getVotes() async {
+    List<Voting> votingList = [];
+
+    try {
+      QuerySnapshot snapshots =
+          await _firestore.collection(Constants.votingRef).get();
+      for (int i = 0; i < snapshots.docs.length; i++) {
+        Voting character =
+            Voting.fromJson(snapshots.docs[i].data() as Map<String, dynamic>);
+        votingList.add(character);
+      }
+
+      return Right(votingList);
+    } catch (err) {
+      return Left(err.toString());
+    }
+  }
+
+  @override
   Future<Either<String, DisneyCharacter>> getCharactersById(String id) async {
     try {
       DocumentSnapshot snapshot =
@@ -177,24 +198,28 @@ class RepoImpl implements Repository {
   @override
   Future<Either<String, String>> vote(VotingRequest request) async {
     try {
-      final result = await getCharactersById(request.charId);
+      final result = await getCharactersById(request.character.id);
       if (result.isRight()) {
         DisneyCharacter character = result.asRight();
         int vote = character.vote! + 1;
+        log(character.morningVotes.toString(), name: 'Morning Votes');
 
         int moringVotes = character.morningVotes!;
         int noonVotes = character.noonVotes!;
         int eveningVotes = character.eveningVotes!;
         int nightVotes = character.nightVotes!;
 
+        log(request.voteTime, name: 'Vote Time');
+
         if (request.voteTime == 'morning') {
-          moringVotes == moringVotes + 1;
+          moringVotes++;
+          log(moringVotes.toString(), name: 'Updated Morning Votes');
         } else if (request.voteTime == 'noon') {
-          noonVotes = noonVotes + 1;
+          noonVotes++;
         } else if (request.voteTime == 'evening') {
-          eveningVotes = eveningVotes + 1;
+          eveningVotes++;
         } else {
-          nightVotes = nightVotes + 1;
+          nightVotes++;
         }
 
         //update character votes
@@ -209,8 +234,21 @@ class RepoImpl implements Repository {
           'night-votes': nightVotes,
         });
         //cast voting
-        request = request.copyWith(charVotes: vote);
-        request = request.copyWith(charName: character.name);
+        // request = request.copyWith(charVotes: vote);
+        // request = request.copyWith(charName: character.name);
+        request = request.copyWith(
+            character: request.character.copyWith(
+          id: character.id,
+          name: character.name,
+          desc: character.desc,
+          image: character.image,
+          votes: vote,
+          morningVotes: moringVotes,
+          noonVotes: noonVotes,
+          eveningVotes: eveningVotes,
+          nightVotes: nightVotes,
+          timestamp: character.timestamp,
+        ));
         await _firestore
             .collection(Constants.votingRef)
             .doc(request.id)
@@ -225,10 +263,13 @@ class RepoImpl implements Repository {
   }
 
   @override
-  Future<Either<String, String>> resetPassword(String email) async {
+  Future<Either<String, String>> updatePassword(String password) async {
     try {
-      await _auth.sendPasswordResetEmail(email: email);
-      return const Right('Check your Email!');
+      // await _auth.sendPasswordResetEmail(email: email);
+      await _auth.currentUser!.updatePassword(password);
+      // _auth.verifyPasswordResetCode(code);
+      // _auth.confirmPasswordReset(code: code, newPassword: newPassword)
+      return const Right('Password Updated. Sign in again!');
     } catch (err) {
       print(err);
       return Left(err.toString());

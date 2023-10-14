@@ -2,15 +2,12 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:dartz/dartz.dart';
 import 'package:disney_voting/config/config.dart';
 import 'package:disney_voting/controllers/base_controller.dart';
 import 'package:disney_voting/controllers/states.dart';
 import 'package:disney_voting/data/repository/repository.dart';
 import 'package:disney_voting/data/requests/requests.dart';
 import 'package:disney_voting/data/responses/responses.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 
 class CharacterController extends BaseController {
@@ -19,7 +16,8 @@ class CharacterController extends BaseController {
   CharacterController(this._repository);
   final ImagePicker _picker = ImagePicker();
   int timestamp = DateTime.now().millisecondsSinceEpoch;
-  AddCharacterRequest request = AddCharacterRequest('', '', '', '', 0, 0);
+  AddCharacterRequest request =
+      AddCharacterRequest('', '', '', '', 0, 0, 0, 0, 0, 0);
   File? image;
   DisneyCharacter? disneyCharacter;
   int currentIndex = 0;

@@ -14,24 +14,26 @@ class CustomTextFormField extends StatefulWidget {
   final double horizontalPadding;
   final Function(String)? onValueChanged;
   final String? Function(String?)? validator;
+  final Widget? suffix;
   final bool expands;
   final int? maxLines;
 
-  const CustomTextFormField({
-    Key? key,
-    required this.controller,
-    required this.hint,
-    this.keyboard = TextInputType.text,
-    this.focusNode,
-    this.onFinished,
-    this.isPassword = false,
-    this.horizontalPadding = 20.0,
-    this.onValueChanged,
-    this.validator,
-    this.label,
-    this.expands = false,
-    this.maxLines = 1,
-  }) : super(key: key);
+  const CustomTextFormField(
+      {Key? key,
+      required this.controller,
+      required this.hint,
+      this.keyboard = TextInputType.text,
+      this.focusNode,
+      this.onFinished,
+      this.isPassword = false,
+      this.horizontalPadding = 20.0,
+      this.onValueChanged,
+      this.validator,
+      this.label,
+      this.expands = false,
+      this.maxLines = 1,
+      this.suffix})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -61,8 +63,11 @@ class CustomTextFormFieldState extends State<CustomTextFormField> {
         decoration: InputDecoration(
             labelText: widget.label,
             hintText: widget.hint,
+            suffixIcon: widget.suffix,
+            suffixIconConstraints:
+                BoxConstraints.tight(Size(Sizes.s40, Sizes.s40)),
             contentPadding:
-                EdgeInsets.symmetric(horizontal: Sizes.s12, vertical: Sizes.s4),
+                EdgeInsets.symmetric(horizontal: Sizes.s12, vertical: Sizes.s8),
             floatingLabelBehavior: FloatingLabelBehavior.always,
             enabledBorder: OutlineInputBorder(),
             focusedBorder: OutlineInputBorder(),
