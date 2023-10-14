@@ -31,7 +31,9 @@ class _UpdateCharacterState extends State<UpdateCharacter> {
   void initState() {
     _controller = context.read<CharacterController>();
     _controller.init();
-    _getCharacterById();
+    Future.delayed(Duration.zero, () {
+      _getCharacterById();
+    });
     super.initState();
   }
 

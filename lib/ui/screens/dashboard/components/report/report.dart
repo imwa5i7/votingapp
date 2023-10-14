@@ -19,8 +19,10 @@ class ReportsWidget extends StatefulWidget {
 class _ReportsWidgetState extends State<ReportsWidget> {
   @override
   initState() {
-    context.read<CharacterController>().getCharaters();
-    context.read<VotingController>().getVotes();
+    Future.delayed(Duration.zero, () {
+      context.read<CharacterController>().getCharaters();
+      context.read<VotingController>().getVotes();
+    });
 
     super.initState();
   }
@@ -69,7 +71,8 @@ class _ReportsWidgetState extends State<ReportsWidget> {
             ),
             const SizedBox(height: Sizes.s20),
             Consumer<CharacterController>(builder: (context, char, child) {
-              return char.states.status == Status.loading
+              return char.states.status == Status.loading ||
+                      char.states.status == Status.initial
                   ? const Center(
                       child: CircularProgressIndicator(),
                     )

@@ -66,13 +66,13 @@ class VotingController extends BaseController {
 
       _setPopularityReport();
 
-      for (int i = 0; i < currenVotingList.length; i++) {
-        log('${currenVotingList[i].character!.vote}:${currenVotingList[i].character!.name!}');
-      }
+      // for (int i = 0; i < currenVotingList.length; i++) {
+      //   log('${currenVotingList[i].character!.vote}:${currenVotingList[i].character!.name!}');
+      // }
 
-      for (int i = 0; i < top5.length; i++) {
-        log('${top5[i].character!.vote}=>${top5[i].character!.name!}');
-      }
+      // for (int i = 0; i < top5.length; i++) {
+      //   log('${top5[i].character!.vote}=>${top5[i].character!.name!}');
+      // }
 
       setState(States.completed(allVotingList));
     } else {

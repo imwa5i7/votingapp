@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
       title: Constants.appName,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.black87),
         useMaterial3: true,
       ),
       onGenerateRoute: RouteGenerator.getRoute,
