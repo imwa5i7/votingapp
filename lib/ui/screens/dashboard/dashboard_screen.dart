@@ -91,7 +91,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
           ListTile(
             title: const Text('Change Password'),
-            leading: const Icon(Icons.exit_to_app),
+            leading: const Icon(Icons.lock),
             titleTextStyle: const TextStyle(
                 fontWeight: FontWeight.bold, color: Palette.primary),
             onTap: () async {
@@ -104,7 +104,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
           ListTile(
             title: const Text('Sign out'),
-            leading: const Icon(Icons.exit_to_app),
+            leading: const Icon(Icons.exit_to_app_rounded),
             titleTextStyle: const TextStyle(
                 fontWeight: FontWeight.bold, color: Palette.primary),
             onTap: () async {

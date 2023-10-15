@@ -33,7 +33,7 @@ class VotingScreen extends StatelessWidget {
                   Navigator.pushNamed(context, Routes.login);
                 }
               },
-              icon: const Icon(Icons.person))
+              icon: const Icon(Icons.admin_panel_settings_outlined))
         ],
       ),
       body: status == Status.loading || status == Status.buttonLoading

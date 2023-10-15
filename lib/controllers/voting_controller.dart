@@ -62,17 +62,17 @@ class VotingController extends BaseController {
 
       currenVotingList
           .sort((b, a) => a.character!.vote!.compareTo(b.character!.vote!));
-      _setTopFiveReport();
+      _setTopFiveReport(true);
 
       _setPopularityReport();
 
-      // for (int i = 0; i < currenVotingList.length; i++) {
-      //   log('${currenVotingList[i].character!.vote}:${currenVotingList[i].character!.name!}');
-      // }
+      for (int i = 0; i < currenVotingList.length; i++) {
+        log('${currenVotingList[i].character!.vote}:${currenVotingList[i].character!.name!}');
+      }
 
-      // for (int i = 0; i < top5.length; i++) {
-      //   log('${top5[i].character!.vote}=>${top5[i].character!.name!}');
-      // }
+      for (int i = 0; i < top5.length; i++) {
+        log('${top5[i].character!.vote}=>${top5[i].character!.name!}');
+      }
 
       setState(States.completed(allVotingList));
     } else {
@@ -82,11 +82,15 @@ class VotingController extends BaseController {
 
   setToAll() {
     currenVotingList = allVotingList;
+    _setTopFiveReport();
+    _setPopularityReport();
     selectDateTime = null;
     notifyListeners();
   }
 
-  _setTopFiveReport() {
+  int totalVotes = 0;
+
+  _setTopFiveReport([bool? all]) {
     top5 = currenVotingList.length > 4
         ? groupBy(currenVotingList, (e) => e.character!.id)
             .values
@@ -94,6 +98,14 @@ class VotingController extends BaseController {
             .toList()
             .sublist(0, 5)
         : [];
+    if (all != null) {
+      totalVotes = groupBy(currenVotingList, (e) => e.character!.id)
+          .values
+          .map((e) => e)
+          .toList()
+          .length;
+      log(totalVotes.toString(), name: 'Total Votes');
+    }
     log(top5.length.toString(), name: 'Top 5');
   }
 
