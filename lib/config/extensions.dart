@@ -11,9 +11,9 @@ extension MillisecondsToDate on int {
 
     if (date.hour > 4 && date.hour <= 12) {
       return 'morning';
-    } else if (date.hour >= 12 && date.hour <= 15) {
+    } else if (date.hour >= 12 && date.hour <= 17) {
       return 'noon';
-    } else if (date.hour > 15 && date.hour > 21) {
+    } else if (date.hour >= 17 && date.hour <= 21) {
       return 'evening';
     } else {
       return 'night';
