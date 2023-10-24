@@ -63,11 +63,11 @@ class _CharactersWidgetState extends State<CharactersWidget> {
                             .contains(_text.toLowerCase());
                       }).toList();
                     } else {
-                      for (int i = 0; i < snapshot.data!.docs.length; i++) {
-                        DisneyCharacter character = DisneyCharacter.fromJson(
-                            snapshot.data!.docs[i].data());
-                        charList.add(character);
-                      }
+                      // for (int i = 0; i < snapshot.data!.docs.length; i++) {
+                      //   DisneyCharacter character = DisneyCharacter.fromJson(
+                      //       snapshot.data!.docs[i].data());
+                      //   charList.add(character);
+                      // }
                     }
 
                     return ListView.builder(

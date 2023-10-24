@@ -35,14 +35,13 @@ class Top5ChartState extends State {
                       ? Top5BarChart(charList: vote.top5)
                       : AspectRatio(
                           aspectRatio: 1.3,
-                          child: Expanded(
-                              child: Container(
+                          child: Container(
                             alignment: Alignment.center,
                             child: Text(
                               'No data found.',
                               style: TextStyle(color: Colors.grey.shade400),
                             ),
-                          )),
+                          ),
                         )
                   : Text(vote.states.message!);
         }),
