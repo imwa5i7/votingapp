@@ -198,65 +198,18 @@ class RepoImpl implements Repository {
   @override
   Future<Either<String, String>> vote(VotingRequest request) async {
     try {
-      final result = await getCharactersById(request.character.id);
-      if (result.isRight()) {
-        DisneyCharacter character = result.asRight();
-        int vote = character.vote! + 1;
-        log(character.morningVotes.toString(), name: 'Morning Votes');
+      await _firestore
+          .collection(Constants.charRef)
+          .doc(request.charId)
+          .update({
+        'total-votes': FieldValue.arrayUnion([request.toMap()]),
+      });
 
-        int moringVotes = character.morningVotes!;
-        int noonVotes = character.noonVotes!;
-        int eveningVotes = character.eveningVotes!;
-        int nightVotes = character.nightVotes!;
-
-        log(request.voteTime, name: 'Vote Time');
-
-        if (request.voteTime == 'morning') {
-          moringVotes++;
-          log(moringVotes.toString(), name: 'Updated Morning Votes');
-        } else if (request.voteTime == 'noon') {
-          noonVotes++;
-        } else if (request.voteTime == 'evening') {
-          eveningVotes++;
-        } else {
-          nightVotes++;
-        }
-
-        //update character votes
-        await _firestore
-            .collection(Constants.charRef)
-            .doc(character.id)
-            .update({
-          'char-votes': vote,
-          'morning-votes': moringVotes,
-          'noon-votes': noonVotes,
-          'evening-votes': eveningVotes,
-          'night-votes': nightVotes,
-        });
-        //cast voting
-        // request = request.copyWith(charVotes: vote);
-        // request = request.copyWith(charName: character.name);
-        request = request.copyWith(
-            character: request.character.copyWith(
-          id: character.id,
-          name: character.name,
-          desc: character.desc,
-          image: character.image,
-          votes: vote,
-          morningVotes: moringVotes,
-          noonVotes: noonVotes,
-          eveningVotes: eveningVotes,
-          nightVotes: nightVotes,
-          timestamp: character.timestamp,
-        ));
-        await _firestore
-            .collection(Constants.votingRef)
-            .doc(request.id)
-            .set(request.toMap());
-        return Right('Voted for ${character.name} Successfully');
-      } else {
-        return const Left('Problem with voting');
-      }
+      await _firestore
+          .collection(Constants.votingRef)
+          .doc(request.id)
+          .set(request.toMap());
+      return const Right('Voted Successfully');
     } catch (err) {
       return Left(err.toString());
     }

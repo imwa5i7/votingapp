@@ -76,7 +76,7 @@ class _ViewCharacterScreenState extends State<ViewCharacterScreen> {
                           borderRadius: BorderRadius.circular(Sizes.s16),
                         ),
                         child: Text(
-                          'Votes(${character.vote.toString()})',
+                          'Votes(${character.totalVotes!.length.toString()})',
                           textAlign: TextAlign.justify,
                           style: const TextStyle(
                               color: Palette.white,

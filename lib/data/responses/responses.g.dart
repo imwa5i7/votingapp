@@ -11,7 +11,6 @@ DisneyCharacter _$DisneyCharacterFromJson(Map<String, dynamic> json) =>
       id: json['char-id'] as String?,
       name: json['char-name'] as String?,
       desc: json['char-desc'] as String?,
-      slug: json['char-slug'] as String?,
       image: json['char-image'] as String?,
       vote: json['char-votes'] as int?,
       morningVotes: json['morning-votes'] as int?,
@@ -19,36 +18,16 @@ DisneyCharacter _$DisneyCharacterFromJson(Map<String, dynamic> json) =>
       eveningVotes: json['evening-votes'] as int?,
       noonVotes: json['noon-votes'] as int?,
       timestamp: json['creation-date'] as int?,
+      totalVotes: json.containsKey('total-votes')
+          ? (json['total-votes'] as List<dynamic>?)
+              ?.map((e) => Voting.fromJson(e as Map<String, dynamic>))
+              .toList()
+          : [],
     );
 
-Map<String, dynamic> _$DisneyCharacterToJson(DisneyCharacter instance) =>
-    <String, dynamic>{
-      'char-id': instance.id,
-      'char-name': instance.name,
-      'char-desc': instance.desc,
-      'char-slug': instance.slug,
-      'char-image': instance.image,
-      'char-votes': instance.vote,
-      'morning-votes': instance.morningVotes,
-      'noon-votes': instance.noonVotes,
-      'evening-votes': instance.eveningVotes,
-      'night-votes': instance.nightVotes,
-      'creation-date': instance.timestamp,
-    };
-
-Voting _$CharacterVotingFromJson(Map<String, dynamic> json) => Voting(
+Voting _$VotingFromJson(Map<String, dynamic> json) => Voting(
       id: json['voter-id'] as String?,
+      charId: json['char-id'] as String?,
       voteTime: json['vote-time'] as String?,
       timestamp: json['creation-date'] as int?,
-      character: json['character'] == null
-          ? null
-          : DisneyCharacter.fromJson(json['character'] as Map<String, dynamic>),
     );
-
-Map<String, dynamic> _$CharacterVotingToJson(Voting instance) =>
-    <String, dynamic>{
-      'voter-id': instance.id,
-      'vote-time': instance.voteTime,
-      'creation-date': instance.timestamp,
-      'character': instance.character,
-    };

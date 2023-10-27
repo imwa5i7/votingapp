@@ -1,6 +1,6 @@
+import 'dart:async';
 import 'dart:developer';
-
-import 'package:collection/collection.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:disney_voting/config/config.dart';
 import 'package:disney_voting/controllers/base_controller.dart';
 import 'package:disney_voting/controllers/states.dart';
@@ -11,26 +11,25 @@ import 'package:flutter/material.dart';
 
 class VotingController extends BaseController {
   final Repository _repository;
-  VotingController(this._repository);
-  VotingRequest _request = VotingRequest(
-      '', '', 0, AddCharacterRequest('', '', '', '', 0, 0, 0, 0, 0, 0));
+  final FirebaseFirestore _firestore;
+  VotingController(this._repository, this._firestore);
+  VotingRequest _request = VotingRequest('', '', '', 0);
   int _timestamp = DateTime.now().millisecondsSinceEpoch;
   List<Voting> allVotingList = [];
   List<Voting> currenVotingList = [];
-  List<Voting> top5 = [];
 
-  Voting? morning;
-  Voting? noon;
-  Voting? evening;
-  Voting? night;
+  List<DisneyCharacter> topFiveCharList = [];
+  DisneyCharacter? morning;
+  DisneyCharacter? noon;
+  DisneyCharacter? evening;
+  DisneyCharacter? night;
 
   DateTime? selectDateTime;
 
   _setValues(String id) async {
     _request =
         _request.copyWith(id: _timestamp.toString(), timestamp: _timestamp);
-    _request =
-        _request.copyWith(character: _request.character.copyWith(id: id));
+    _request = _request.copyWith(charId: id);
     _request =
         _request.copyWith(voteTime: await _timestamp.convertToVoteTime());
   }
@@ -60,19 +59,24 @@ class VotingController extends BaseController {
       allVotingList = result.asRight();
       currenVotingList = allVotingList;
 
-      currenVotingList
-          .sort((b, a) => a.character!.vote!.compareTo(b.character!.vote!));
-      _setTopFiveReport(true);
+      // allVoting = voting;
 
-      _setPopularityReport();
+      // voting
+      //     .sort((b, a) => a.totalVotes!.length.compareTo(b.totalVotes!.length));
 
-      for (int i = 0; i < currenVotingList.length; i++) {
-        log('${currenVotingList[i].character!.vote}:${currenVotingList[i].character!.name!}');
-      }
+      // currenVotingList
+      //     .sort((b, a) => a.character!.vote!.compareTo(b.character!.vote!));
+      await _setTopFiveReport();
 
-      for (int i = 0; i < top5.length; i++) {
-        log('${top5[i].character!.vote}=>${top5[i].character!.name!}');
-      }
+      await _setPopularityReport();
+
+      // for (int i = 0; i < currenVotingList.length; i++) {
+      //   log('${currenVotingList[i].character!.vote}:${currenVotingList[i].character!.name!}');
+      // }
+
+      // for (int i = 0; i < top5.length; i++) {
+      //   log('${top5[i].character!.vote}=>${top5[i].character!.name!}');
+      // }
 
       setState(States.completed(allVotingList));
     } else {
@@ -80,59 +84,122 @@ class VotingController extends BaseController {
     }
   }
 
-  setToAll() {
+  setToAll() async {
+    setState(States.loading(Constants.loading));
     currenVotingList = allVotingList;
-    _setTopFiveReport();
-    _setPopularityReport();
+    await _setTopFiveReport();
+    await _setPopularityReport();
     selectDateTime = null;
+    setState(States.completed(allVotingList));
+
     notifyListeners();
   }
 
   int totalVotes = 0;
 
-  _setTopFiveReport([bool? all]) {
-    top5 = currenVotingList.length > 4
-        ? groupBy(currenVotingList, (e) => e.character!.id)
-            .values
-            .map((e) => e.first)
-            .toList()
-            .sublist(0, 5)
-        : [];
-    if (all != null) {
-      totalVotes = groupBy(currenVotingList, (e) => e.character!.id)
-          .values
-          .map((e) => e)
-          .toList()
-          .length;
-      log(totalVotes.toString(), name: 'Total Votes');
+  List<MapEntry> _getTopFiveReport() {
+    var map = {};
+
+    for (var element in currenVotingList) {
+      if (!map.containsKey(element.charId)) {
+        map[element.charId] = 1;
+      } else {
+        map[element.charId] += 1;
+      }
     }
-    log(top5.length.toString(), name: 'Top 5');
+
+    log(map.toString());
+    List<MapEntry> sortedEntries = map.entries.toList()
+      ..sort((e1, e2) {
+        var diff = e2.value.compareTo(e1.value);
+        if (diff == 0) diff = e2.key.compareTo(e1.key);
+        return diff;
+      });
+
+    for (int i = 0; i < sortedEntries.length; i++) {
+      log('${sortedEntries[i].key}=>${sortedEntries[i].value}');
+    }
+
+    return sortedEntries.length > 4 ? sortedEntries.sublist(0, 5) : [];
   }
 
-  _setPopularityReport() {
-    morning = currenVotingList.isEmpty ? null : currenVotingList[0];
-    noon = currenVotingList.isEmpty ? null : currenVotingList[0];
-    evening = currenVotingList.isEmpty ? null : currenVotingList[0];
-    night = currenVotingList.isEmpty ? null : currenVotingList[0];
-    log(top5.length.toString(), name: 'Top 5');
-    for (var i = 0; i < currenVotingList.length; i++) {
-      if (currenVotingList[i].character!.morningVotes! >
-          morning!.character!.morningVotes!) {
-        morning = currenVotingList[i];
-      }
-      if (currenVotingList[i].character!.noonVotes! >
-          noon!.character!.noonVotes!) {
-        noon = currenVotingList[i];
-      }
-      if (currenVotingList[i].character!.eveningVotes! >
-          evening!.character!.eveningVotes!) {
-        evening = currenVotingList[i];
-      }
-      if (currenVotingList[i].character!.nightVotes! >
-          night!.character!.nightVotes!) {
-        night = currenVotingList[i];
+  _setTopFiveReport() async {
+    topFiveCharList = [];
+    List<MapEntry> topFiveEntries = _getTopFiveReport();
+    for (int i = 0; i < topFiveEntries.length; i++) {
+      log('${topFiveEntries[i].key}=>${topFiveEntries[i].value}',
+          name: 'Top Five');
+    }
+
+    for (int i = 0; i < topFiveEntries.length; i++) {
+      await _firestore
+          .collection(Constants.charRef)
+          .doc(topFiveEntries[i].key)
+          .update({
+        'char-votes': topFiveEntries[i].value,
+      });
+
+      final result = await _repository.getCharactersById(topFiveEntries[i].key);
+      if (result.isRight()) {
+        topFiveCharList.add(result.asRight());
+      } else {
+        topFiveCharList = [];
       }
     }
+
+    // for (int i = 0; i < topFiveCharList.length; i++) {
+    //   log('${topFiveCharList[i].name}=>${topFiveCharList[i].vote}');
+    // }
+  }
+
+  MapEntry? _getMostInTime(String time) {
+    List<Voting> durationList =
+        currenVotingList.where((element) => element.voteTime == time).toList();
+    var map = {};
+    for (var element in durationList) {
+      if (!map.containsKey(element.charId)) {
+        map[element.charId] = 1;
+      } else {
+        map[element.charId] += 1;
+      }
+    }
+
+    List<MapEntry> sortedEntries = map.entries.toList()
+      ..sort((e1, e2) {
+        var diff = e2.value.compareTo(e1.value);
+        if (diff == 0) diff = e2.key.compareTo(e1.key);
+        return diff;
+      });
+
+    for (int i = 0; i < sortedEntries.length; i++) {
+      log('${sortedEntries[i].key}=>${sortedEntries[i].value}',
+          name: 'Duration $time');
+    }
+
+    return sortedEntries.isNotEmpty ? sortedEntries[0] : null;
+  }
+
+  Future<DisneyCharacter?> _getCharacterInTime(String time) async {
+    MapEntry? timeEntry = _getMostInTime(time);
+    if (timeEntry != null) {
+      await _firestore.collection(Constants.charRef).doc(timeEntry.key).update({
+        '$time-votes': timeEntry.value,
+      });
+      final result = await _repository.getCharactersById(timeEntry.key);
+      if (result.isRight()) {
+        return result.asRight();
+      } else {
+        return null;
+      }
+    }
+    return null;
+  }
+
+  _setPopularityReport() async {
+    morning = await _getCharacterInTime('morning');
+    noon = await _getCharacterInTime('noon');
+    evening = await _getCharacterInTime('evening');
+    night = await _getCharacterInTime('night');
   }
 
   filerListByCurrentDate(BuildContext context) async {
@@ -142,18 +209,23 @@ class VotingController extends BaseController {
         firstDate: DateTime(2023),
         lastDate: DateTime(2030));
     if (selectDateTime != null) {
+      setState(States.loading(Constants.loading));
+
       currenVotingList = allVotingList
           .where((element) =>
-              _compareDates(element.timestamp!.toDate(), selectDateTime))
+              _compareDates(element.timestamp!.toDate(), selectDateTime!))
           .toList();
       log(currenVotingList.length.toString(), name: 'Filter List');
-      _setTopFiveReport();
-      _setPopularityReport();
+      await _setTopFiveReport();
+      await _setPopularityReport();
+      setState(States.completed(allVotingList));
     } else {
+      setState(States.loading(Constants.loading));
       currenVotingList = allVotingList;
       selectDateTime = null;
-      _setTopFiveReport();
-      _setPopularityReport();
+      await _setTopFiveReport();
+      await _setPopularityReport();
+      setState(States.completed(allVotingList));
     }
     notifyListeners();
   }

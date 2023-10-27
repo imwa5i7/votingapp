@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:disney_voting/controllers/auth_controller.dart';
 import 'package:disney_voting/controllers/characters_controller.dart';
 import 'package:disney_voting/controllers/voting_controller.dart';
@@ -8,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'config/config.dart';
 import 'firebase_options.dart';
+
+final GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,7 +26,8 @@ void main() async {
     ChangeNotifierProvider(
         create: (_) => CharacterController(instance<Repository>())),
     ChangeNotifierProvider(
-        create: (_) => VotingController(instance<Repository>()))
+        create: (_) => VotingController(
+            instance<Repository>(), instance<FirebaseFirestore>()))
   ], child: const MyApp()));
 }
 
@@ -39,6 +43,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.black87),
         useMaterial3: true,
       ),
+      navigatorKey: navKey,
       onGenerateRoute: RouteGenerator.getRoute,
       home: const VotingScreen(),
     );

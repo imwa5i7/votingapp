@@ -53,109 +53,110 @@ class PopularityTimeChartState extends State {
           children: [
             Consumer<VotingController>(builder: (context, controller, child) {
               return controller.states.status == Status.completed
-                  ? controller.morning == null ||
-                          controller.noon == null ||
-                          controller.evening == null ||
-                          controller.evening == null
-                      ? AspectRatio(
-                          aspectRatio: 1.1,
-                          child: Center(
-                            child: Text('No date found.',
-                                style: TextStyle(
-                                  color: Colors.grey.shade400,
-                                )),
+                  ?
+                  // controller.morning == null ||
+                  //         controller.noon == null ||
+                  //         controller.evening == null ||
+                  //         controller.evening == null
+                  //     ? AspectRatio(
+                  //         aspectRatio: 1.1,
+                  //         child: Center(
+                  //           child: Text('No date found.',
+                  //               style: TextStyle(
+                  //                 color: Colors.grey.shade400,
+                  //               )),
+                  //         ),
+                  //       )
+                  //     :
+                  Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: Sizes.s20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Indicator(
+                                color: Colors.blue,
+                                text: 'Morning',
+                                isSquare: false,
+                                size: touchedIndex == 0 ? 18 : 16,
+                                textColor: touchedIndex == 0
+                                    ? Palette.primary
+                                    : Palette.disable,
+                              ),
+                              Indicator(
+                                color: Colors.yellow,
+                                text: 'Afternoon',
+                                isSquare: false,
+                                size: touchedIndex == 1 ? 18 : 16,
+                                textColor: touchedIndex == 1
+                                    ? Palette.primary
+                                    : Palette.disable,
+                              ),
+                              Indicator(
+                                color: Colors.purple,
+                                text: 'Evening',
+                                isSquare: false,
+                                size: touchedIndex == 2 ? 18 : 16,
+                                textColor: touchedIndex == 2
+                                    ? Palette.primary
+                                    : Palette.disable,
+                              ),
+                              Indicator(
+                                color: Colors.green,
+                                text: 'Night',
+                                isSquare: false,
+                                size: touchedIndex == 3 ? 18 : 16,
+                                textColor: touchedIndex == 3
+                                    ? Palette.primary
+                                    : Palette.disable,
+                              ),
+                            ],
                           ),
-                        )
-                      : Row(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(left: Sizes.s20),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Indicator(
-                                    color: Colors.blue,
-                                    text: 'Morning',
-                                    isSquare: false,
-                                    size: touchedIndex == 0 ? 18 : 16,
-                                    textColor: touchedIndex == 0
-                                        ? Palette.primary
-                                        : Palette.disable,
+                        ),
+                        Expanded(
+                          child: AspectRatio(
+                            aspectRatio: 1.1,
+                            child: Consumer<VotingController>(
+                                builder: (context, controller, child) {
+                              return PieChart(
+                                PieChartData(
+                                  pieTouchData: PieTouchData(
+                                    touchCallback:
+                                        (FlTouchEvent event, pieTouchResponse) {
+                                      setState(() {
+                                        if (!event
+                                                .isInterestedForInteractions ||
+                                            pieTouchResponse == null ||
+                                            pieTouchResponse.touchedSection ==
+                                                null) {
+                                          touchedIndex = -1;
+                                          return;
+                                        }
+                                        touchedIndex = pieTouchResponse
+                                            .touchedSection!
+                                            .touchedSectionIndex;
+                                      });
+                                    },
                                   ),
-                                  Indicator(
-                                    color: Colors.yellow,
-                                    text: 'Afternoon',
-                                    isSquare: false,
-                                    size: touchedIndex == 1 ? 18 : 16,
-                                    textColor: touchedIndex == 1
-                                        ? Palette.primary
-                                        : Palette.disable,
+                                  borderData: FlBorderData(
+                                    show: false,
                                   ),
-                                  Indicator(
-                                    color: Colors.purple,
-                                    text: 'Evening',
-                                    isSquare: false,
-                                    size: touchedIndex == 2 ? 18 : 16,
-                                    textColor: touchedIndex == 2
-                                        ? Palette.primary
-                                        : Palette.disable,
-                                  ),
-                                  Indicator(
-                                    color: Colors.green,
-                                    text: 'Night',
-                                    isSquare: false,
-                                    size: touchedIndex == 3 ? 18 : 16,
-                                    textColor: touchedIndex == 3
-                                        ? Palette.primary
-                                        : Palette.disable,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Expanded(
-                              child: AspectRatio(
-                                aspectRatio: 1.1,
-                                child: Consumer<VotingController>(
-                                    builder: (context, controller, child) {
-                                  return PieChart(
-                                    PieChartData(
-                                      pieTouchData: PieTouchData(
-                                        touchCallback: (FlTouchEvent event,
-                                            pieTouchResponse) {
-                                          setState(() {
-                                            if (!event
-                                                    .isInterestedForInteractions ||
-                                                pieTouchResponse == null ||
-                                                pieTouchResponse
-                                                        .touchedSection ==
-                                                    null) {
-                                              touchedIndex = -1;
-                                              return;
-                                            }
-                                            touchedIndex = pieTouchResponse
-                                                .touchedSection!
-                                                .touchedSectionIndex;
-                                          });
-                                        },
-                                      ),
-                                      borderData: FlBorderData(
-                                        show: false,
-                                      ),
-                                      sectionsSpace: 0,
-                                      centerSpaceRadius: 0,
-                                      sections: showingSections([
-                                        controller.morning!,
-                                        controller.noon!,
-                                        controller.evening!,
-                                        controller.night!,
-                                      ]),
-                                    ),
-                                  );
-                                }),
-                              ),
-                            ),
-                          ],
-                        )
+                                  sectionsSpace: 0,
+                                  centerSpaceRadius: 0,
+                                  sections: showingSections([
+                                    controller.morning,
+                                    controller.noon,
+                                    controller.evening,
+                                    controller.night,
+                                  ]),
+                                ),
+                              );
+                            }),
+                          ),
+                        ),
+                      ],
+                    )
                   : const AspectRatio(
                       aspectRatio: 1.1,
                       child: Center(
@@ -169,7 +170,23 @@ class PopularityTimeChartState extends State {
     );
   }
 
-  List<PieChartSectionData> showingSections(List<Voting> popularData) {
+  _staticData() {
+    return PieChartSectionData(
+      color: Colors.yellow,
+      value: 0,
+      title: '',
+      radius: 0,
+      titleStyle: const TextStyle(
+        fontSize: Sizes.s12,
+        fontWeight: FontWeight.bold,
+        color: Color(0xffffffff),
+        shadows: null,
+      ),
+    );
+  }
+
+  List<PieChartSectionData> showingSections(
+      List<DisneyCharacter?> popularData) {
     return List.generate(4, (i) {
       final isTouched = i == touchedIndex;
       final fontSize = isTouched ? Sizes.s16 : Sizes.s12;
@@ -179,81 +196,89 @@ class PopularityTimeChartState extends State {
 
       switch (i) {
         case 0:
-          return PieChartSectionData(
-            color: Colors.blue,
-            value: popularData[0].character!.morningVotes!.toDouble(),
-            title: popularData[0].character!.name!.split(' ').first,
-            radius: radius,
-            titleStyle: TextStyle(
-              fontSize: fontSize,
-              fontWeight: FontWeight.bold,
-              color: const Color(0xffffffff),
-              shadows: shadows,
-            ),
-            badgeWidget: _Badge(
-              popularData[0].character!.image!,
-              size: widgetSize,
-              borderColor: Colors.blue,
-            ),
-            badgePositionPercentageOffset: .98,
-          );
+          return popularData[0] != null
+              ? PieChartSectionData(
+                  color: Colors.blue,
+                  value: popularData[0]!.morningVotes!.toDouble(),
+                  title: popularData[0]!.name!.split(' ').first,
+                  radius: radius,
+                  titleStyle: TextStyle(
+                    fontSize: fontSize,
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xffffffff),
+                    shadows: shadows,
+                  ),
+                  badgeWidget: _Badge(
+                    popularData[0]!.image!,
+                    size: widgetSize,
+                    borderColor: Colors.blue,
+                  ),
+                  badgePositionPercentageOffset: .98,
+                )
+              : _staticData();
         case 1:
-          return PieChartSectionData(
-            color: Colors.yellow,
-            value: popularData[1].character!.noonVotes!.toDouble(),
-            title: popularData[1].character!.name!.split(' ').first,
-            radius: radius,
-            titleStyle: TextStyle(
-              fontSize: fontSize,
-              fontWeight: FontWeight.bold,
-              color: const Color(0xffffffff),
-              shadows: shadows,
-            ),
-            badgeWidget: _Badge(
-              popularData[1].character!.image!,
-              size: widgetSize,
-              borderColor: Colors.yellow,
-            ),
-            badgePositionPercentageOffset: .98,
-          );
+          return popularData[1] != null
+              ? PieChartSectionData(
+                  color: Colors.yellow,
+                  value: popularData[1]!.noonVotes!.toDouble(),
+                  title: popularData[1]!.name!.split(' ').first,
+                  radius: radius,
+                  titleStyle: TextStyle(
+                    fontSize: fontSize,
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xffffffff),
+                    shadows: shadows,
+                  ),
+                  badgeWidget: _Badge(
+                    popularData[1]!.image!,
+                    size: widgetSize,
+                    borderColor: Colors.yellow,
+                  ),
+                  badgePositionPercentageOffset: .98,
+                )
+              : _staticData();
         case 2:
-          return PieChartSectionData(
-            color: Colors.purple,
-            value: popularData[2].character!.eveningVotes!.toDouble(),
-            title: popularData[2].character!.name!.split(' ').first,
-            radius: radius,
-            titleStyle: TextStyle(
-              fontSize: fontSize,
-              fontWeight: FontWeight.bold,
-              color: const Color(0xffffffff),
-              shadows: shadows,
-            ),
-            badgeWidget: _Badge(
-              popularData[2].character!.image!,
-              size: widgetSize,
-              borderColor: Colors.purple,
-            ),
-            badgePositionPercentageOffset: .98,
-          );
+          return popularData[2] != null
+              ? PieChartSectionData(
+                  color: Colors.purple,
+                  value: popularData[2]!.eveningVotes!.toDouble(),
+                  title: popularData[2]!.name!.split(' ').first,
+                  radius: radius,
+                  titleStyle: TextStyle(
+                    fontSize: fontSize,
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xffffffff),
+                    shadows: shadows,
+                  ),
+                  badgeWidget: _Badge(
+                    popularData[2]!.image!,
+                    size: widgetSize,
+                    borderColor: Colors.purple,
+                  ),
+                  badgePositionPercentageOffset: .98,
+                )
+              : _staticData();
         case 3:
-          return PieChartSectionData(
-            color: Colors.green,
-            value: popularData[3].character!.nightVotes!.toDouble(),
-            title: popularData[3].character!.name!.split(' ').first,
-            radius: radius,
-            titleStyle: TextStyle(
-              fontSize: fontSize,
-              fontWeight: FontWeight.bold,
-              color: const Color(0xffffffff),
-              shadows: shadows,
-            ),
-            badgeWidget: _Badge(
-              popularData[3].character!.image!,
-              size: widgetSize,
-              borderColor: Colors.green,
-            ),
-            badgePositionPercentageOffset: .98,
-          );
+          return popularData[3] != null
+              ? PieChartSectionData(
+                  color: Colors.green,
+                  value: popularData[3]!.nightVotes!.toDouble(),
+                  title: popularData[3]!.name!.split(' ').first,
+                  radius: radius,
+                  titleStyle: TextStyle(
+                    fontSize: fontSize,
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xffffffff),
+                    shadows: shadows,
+                  ),
+                  badgeWidget: _Badge(
+                    popularData[3]!.image!,
+                    size: widgetSize,
+                    borderColor: Colors.green,
+                  ),
+                  badgePositionPercentageOffset: .98,
+                )
+              : _staticData();
         default:
           throw Exception('Oh no');
       }

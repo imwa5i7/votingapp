@@ -31,8 +31,8 @@ class Top5ChartState extends State {
                   child: Center(child: CircularProgressIndicator()),
                 )
               : vote.states.status == Status.completed
-                  ? vote.top5.isNotEmpty
-                      ? Top5BarChart(charList: vote.top5)
+                  ? vote.topFiveCharList.isNotEmpty
+                      ? Top5BarChart(charList: vote.topFiveCharList)
                       : AspectRatio(
                           aspectRatio: 1.3,
                           child: Container(

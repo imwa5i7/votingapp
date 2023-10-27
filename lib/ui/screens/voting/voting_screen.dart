@@ -60,7 +60,7 @@ class VotingScreen extends StatelessWidget {
                           name: charList[i].name!,
                           desc: charList[i].desc!,
                           image: charList[i].image!,
-                          votes: charList[i].vote!,
+                          votes: charList[i].totalVotes!.length,
                           onTap: () async {
                             final voting = context.read<VotingController>();
                             await voting.vote(charList[i].id!);

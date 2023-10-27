@@ -134,7 +134,8 @@ class _ReportsWidgetState extends State<ReportsWidget> {
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold),
                                         ),
-                                        Text(char.selectedDisneyCharacter!.vote
+                                        Text(char.selectedDisneyCharacter!
+                                            .totalVotes!.length
                                             .toString()),
                                       ],
                                     ),

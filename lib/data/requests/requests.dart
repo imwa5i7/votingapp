@@ -5,6 +5,7 @@ class SignUpRequest {
 
   Map<String, dynamic> toMap() {
     return {
+      'id': timestamp.toString(),
       'display-name': displayName,
       'email': email,
       'creation-date': timestamp,
@@ -21,43 +22,27 @@ class AddCharacterRequest {
   final String id;
   String image;
   final String name, desc;
-  final int morningVotes, noonVotes, eveningVotes, nightVotes;
-  final int votes, timestamp;
+  final int timestamp;
+  final List<VotingRequest> votingRequest;
 
-  AddCharacterRequest(
-      this.id,
-      this.image,
-      this.name,
-      this.desc,
-      this.votes,
-      this.morningVotes,
-      this.noonVotes,
-      this.eveningVotes,
-      this.nightVotes,
-      this.timestamp);
+  AddCharacterRequest(this.id, this.image, this.name, this.desc, this.timestamp,
+      this.votingRequest);
 
   AddCharacterRequest copyWith(
       {String? id,
       String? image,
       String? name,
       String? desc,
-      int? votes,
-      int? morningVotes,
-      int? noonVotes,
-      int? eveningVotes,
-      int? nightVotes,
-      int? timestamp}) {
+      int? timestamp,
+      List<VotingRequest>? votingRequest}) {
     return AddCharacterRequest(
-        id ?? this.id,
-        image ?? this.image,
-        name ?? this.name,
-        desc ?? this.desc,
-        votes ?? this.votes,
-        morningVotes ?? this.morningVotes,
-        noonVotes ?? this.noonVotes,
-        eveningVotes ?? this.eveningVotes,
-        nightVotes ?? this.nightVotes,
-        timestamp ?? this.timestamp);
+      id ?? this.id,
+      image ?? this.image,
+      name ?? this.name,
+      desc ?? this.desc,
+      timestamp ?? this.timestamp,
+      votingRequest ?? this.votingRequest,
+    );
   }
 
   Map<String, dynamic> toMap() {
@@ -65,13 +50,7 @@ class AddCharacterRequest {
       'char-id': id,
       'char-name': name,
       'char-desc': desc,
-      'char-slug': name.toLowerCase().replaceAll(' ', '-').toString(),
       'char-image': image,
-      'char-votes': votes,
-      'morning-votes': morningVotes,
-      'noon-votes': noonVotes,
-      'evening-votes': eveningVotes,
-      'night-votes': nightVotes,
       'creation-date': timestamp,
     };
   }
@@ -79,31 +58,32 @@ class AddCharacterRequest {
 
 class VotingRequest {
   final String id;
+  final String charId;
   final String voteTime;
   final int timestamp;
-  final AddCharacterRequest character;
-  VotingRequest(this.id, this.voteTime, this.timestamp, this.character);
+
+  VotingRequest(this.id, this.charId, this.voteTime, this.timestamp);
 
   VotingRequest copyWith({
     String? id,
+    String? charId,
     String? voteTime,
     int? timestamp,
-    AddCharacterRequest? character,
   }) {
     return VotingRequest(
       id ?? this.id,
+      charId ?? this.charId,
       voteTime ?? this.voteTime,
       timestamp ?? this.timestamp,
-      character ?? this.character,
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
       'voter-id': id,
+      'char-id': charId,
       'vote-time': voteTime,
       'creation-date': timestamp,
-      'character': character.toMap(),
     };
   }
 }

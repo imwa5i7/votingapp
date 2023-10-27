@@ -16,8 +16,7 @@ class CharacterController extends BaseController {
   CharacterController(this._repository);
   final ImagePicker _picker = ImagePicker();
   int timestamp = DateTime.now().millisecondsSinceEpoch;
-  AddCharacterRequest request =
-      AddCharacterRequest('', '', '', '', 0, 0, 0, 0, 0, 0);
+  AddCharacterRequest request = AddCharacterRequest('', '', '', '', 0, []);
   File? image;
   DisneyCharacter? disneyCharacter;
   int currentIndex = 0;

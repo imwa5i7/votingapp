@@ -6,7 +6,7 @@ import 'package:disney_voting/ui/widgets/custom_field.dart';
 import 'package:flutter/material.dart';
 
 class CharactersWidget extends StatefulWidget {
-  CharactersWidget({super.key});
+  const CharactersWidget({super.key});
 
   @override
   State<CharactersWidget> createState() => _CharactersWidgetState();
@@ -77,7 +77,7 @@ class _CharactersWidgetState extends State<CharactersWidget> {
                             name: charList[i].name!,
                             desc: charList[i].desc!,
                             image: charList[i].image!,
-                            votes: charList[i].vote!,
+                            votes: charList[i].totalVotes!.length,
                             onTap: () {
                               Navigator.pushNamed(context, Routes.viewCharacter,
                                   arguments: charList[i].id);
