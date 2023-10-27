@@ -57,6 +57,19 @@ class CharacterController extends BaseController {
     }
   }
 
+  deleteCharater(String id) async {
+    setState(States.loading(Constants.loading));
+
+    final result = await _repository.deleteCharacter(id);
+    if (result.isRight()) {
+      setState(States.completed(charList));
+    } else {
+      final message = result.asLeft();
+
+      setState(States.error(message));
+    }
+  }
+
   addCharacter([String? id, String? myImage]) async {
     setState(States.buttonLoading(Constants.loading));
     _setIdAndTimestamp();

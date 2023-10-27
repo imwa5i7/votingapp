@@ -1,9 +1,14 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:disney_voting/config/config.dart';
+import 'package:disney_voting/controllers/characters_controller.dart';
+import 'package:disney_voting/controllers/states.dart';
 import 'package:disney_voting/data/responses/responses.dart';
 import 'package:disney_voting/ui/widgets/app_images.dart';
 import 'package:disney_voting/ui/widgets/custom_field.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class CharactersWidget extends StatefulWidget {
   const CharactersWidget({super.key});
@@ -82,6 +87,38 @@ class _CharactersWidgetState extends State<CharactersWidget> {
                               Navigator.pushNamed(context, Routes.viewCharacter,
                                   arguments: charList[i].id);
                             },
+                            onDelete: () {
+                              showDialog(
+                                  context: context,
+                                  builder: (ctx) => AlertDialog(
+                                        title:
+                                            Text('Delete ${charList[i].name}'),
+                                        content: const Text('Are you sure?'),
+                                        actions: [
+                                          TextButton(
+                                              onPressed: () =>
+                                                  Navigator.pop(ctx),
+                                              child: const Text('No')),
+                                          TextButton(
+                                              onPressed: () async {
+                                                final controller = context.read<
+                                                    CharacterController>();
+                                                await controller.deleteCharater(
+                                                    charList[i].id!);
+                                                if (controller.states.status ==
+                                                    Status.completed) {
+                                                  Navigator.pop(ctx);
+                                                }
+                                              },
+                                              child: const Text('Yes')),
+                                        ],
+                                      ));
+                            },
+                            onEdit: () {
+                              Navigator.pushNamed(
+                                  context, Routes.udpateCharacter,
+                                  arguments: charList[i].id);
+                            },
                           );
                         });
                   } else if (snapshot.hasError) {
@@ -107,12 +144,17 @@ class CharacterItem extends StatelessWidget {
   final String image, name, desc;
   final int votes;
   final Function()? onTap;
+  final Function()? onDelete;
+  final Function()? onEdit;
+
   const CharacterItem(
       {super.key,
       required this.name,
       required this.desc,
       required this.image,
       required this.votes,
+      required this.onDelete,
+      required this.onEdit,
       this.onTap});
 
   @override
@@ -135,10 +177,10 @@ class CharacterItem extends StatelessWidget {
           ),
           Positioned(
             top: 0,
-            right: 0,
+            left: 0,
             child: Container(
               padding: const EdgeInsets.all(Sizes.s8),
-              margin: EdgeInsets.only(right: Sizes.s8, top: Sizes.s8),
+              margin: const EdgeInsets.all(Sizes.s8),
               decoration: BoxDecoration(
                 color: Palette.primary,
                 borderRadius: BorderRadius.circular(Sizes.s16),
@@ -151,12 +193,35 @@ class CharacterItem extends StatelessWidget {
               ),
             ),
           ),
+          Positioned(
+            top: 0,
+            right: 0,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                IconButton.filled(
+                  onPressed: onEdit,
+                  style: IconButton.styleFrom(
+                    backgroundColor: Palette.primary,
+                  ),
+                  icon: const Icon(Icons.edit),
+                ),
+                IconButton.filled(
+                  onPressed: onDelete,
+                  style: IconButton.styleFrom(
+                    backgroundColor: Palette.primary,
+                  ),
+                  icon: const Icon(Icons.delete),
+                ),
+              ],
+            ),
+          ),
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(
                 horizontal: Sizes.s12, vertical: Sizes.s12),
-            decoration: BoxDecoration(
-              color: Colors.black54,
+            decoration: const BoxDecoration(
+              color: Palette.primary,
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -169,7 +234,7 @@ class CharacterItem extends StatelessWidget {
                 ),
                 Text(
                   desc,
-                  maxLines: 2,
+                  maxLines: 1,
                   style: const TextStyle(
                       color: Palette.white,
                       fontSize: Sizes.s12,

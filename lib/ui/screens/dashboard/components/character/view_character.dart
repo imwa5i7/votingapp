@@ -29,14 +29,14 @@ class _ViewCharacterScreenState extends State<ViewCharacterScreen> {
       backgroundColor: Palette.primary,
       appBar:
           const CustomAppbar(title: 'Character Details', implyLeading: true),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(context, Routes.udpateCharacter,
-              arguments: widget.id);
-        },
-        backgroundColor: Palette.white,
-        child: const Icon(Icons.edit, color: Palette.primary),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     Navigator.pushNamed(context, Routes.udpateCharacter,
+      //         arguments: widget.id);
+      //   },
+      //   backgroundColor: Palette.white,
+      //   child: const Icon(Icons.edit, color: Palette.primary),
+      // ),
       body: StreamBuilder<DocumentSnapshot>(
           stream: instance<FirebaseFirestore>()
               .collection(Constants.charRef)

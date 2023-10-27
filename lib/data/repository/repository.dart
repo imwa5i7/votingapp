@@ -24,6 +24,7 @@ abstract class Repository {
 
   Future<Either<String, String>> vote(VotingRequest request);
   Future<Either<String, String>> updatePassword(String password);
+  Future<Either<String, String>> deleteCharacter(String id);
 }
 
 class RepoImpl implements Repository {
@@ -223,6 +224,33 @@ class RepoImpl implements Repository {
       // _auth.verifyPasswordResetCode(code);
       // _auth.confirmPasswordReset(code: code, newPassword: newPassword)
       return const Right('Password Updated. Sign in again!');
+    } catch (err) {
+      print(err);
+      return Left(err.toString());
+    }
+  }
+
+  @override
+  Future<Either<String, String>> deleteCharacter(String id) async {
+    try {
+      DocumentSnapshot snapshot =
+          await _firestore.collection(Constants.charRef).doc(id).get();
+      if (snapshot.exists) {
+        await _firestore.collection(Constants.charRef).doc(id).delete();
+        QuerySnapshot snapshot =
+            await _firestore.collection(Constants.votingRef).get();
+        List<DocumentSnapshot> allDocs = snapshot.docs;
+        List<DocumentSnapshot> filteredDocs = allDocs.where((document) {
+          Map<String, dynamic> data = document.data() as Map<String, dynamic>;
+          return data['char-id'] == id;
+        }).toList();
+        for (DocumentSnapshot ds in filteredDocs) {
+          ds.reference.delete();
+        }
+        return const Right('Character Deleted');
+      } else {
+        return const Left('Character Doesn\'t exist');
+      }
     } catch (err) {
       print(err);
       return Left(err.toString());

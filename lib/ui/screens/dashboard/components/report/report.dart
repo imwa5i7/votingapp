@@ -64,7 +64,7 @@ class _ReportsWidgetState extends State<ReportsWidget> {
             const Padding(
               padding: EdgeInsets.only(left: Sizes.s20),
               child: Text(
-                'Character Information:-',
+                'Character Overall Information:-',
                 style: TextStyle(
                     fontWeight: FontWeight.bold, color: Palette.primary),
               ),
