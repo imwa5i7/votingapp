@@ -91,13 +91,12 @@ class VotingController extends BaseController {
     await _setPopularityReport();
     selectDateTime = null;
     setState(States.completed(allVotingList));
-
-    notifyListeners();
   }
 
   int totalVotes = 0;
 
   List<MapEntry> _getTopFiveReport() {
+    //get voting count for each character
     var map = {};
 
     for (var element in currenVotingList) {
@@ -108,6 +107,7 @@ class VotingController extends BaseController {
       }
     }
 
+    //finding the highest voting
     log(map.toString());
     List<MapEntry> sortedEntries = map.entries.toList()
       ..sort((e1, e2) {
@@ -126,24 +126,27 @@ class VotingController extends BaseController {
   _setTopFiveReport() async {
     topFiveCharList = [];
     List<MapEntry> topFiveEntries = _getTopFiveReport();
-    for (int i = 0; i < topFiveEntries.length; i++) {
-      log('${topFiveEntries[i].key}=>${topFiveEntries[i].value}',
-          name: 'Top Five');
-    }
+    if (topFiveEntries.isNotEmpty) {
+      for (int i = 0; i < topFiveEntries.length; i++) {
+        log('${topFiveEntries[i].key}=>${topFiveEntries[i].value}',
+            name: 'Top Five');
+      }
 
-    for (int i = 0; i < topFiveEntries.length; i++) {
-      await _firestore
-          .collection(Constants.charRef)
-          .doc(topFiveEntries[i].key)
-          .update({
-        'char-votes': topFiveEntries[i].value,
-      });
+      for (int i = 0; i < topFiveEntries.length; i++) {
+        await _firestore
+            .collection(Constants.charRef)
+            .doc(topFiveEntries[i].key)
+            .update({
+          'char-votes': topFiveEntries[i].value,
+        });
 
-      final result = await _repository.getCharactersById(topFiveEntries[i].key);
-      if (result.isRight()) {
-        topFiveCharList.add(result.asRight());
-      } else {
-        topFiveCharList = [];
+        final result =
+            await _repository.getCharactersById(topFiveEntries[i].key);
+        if (result.isRight()) {
+          topFiveCharList.add(result.asRight());
+        } else {
+          topFiveCharList = [];
+        }
       }
     }
 
@@ -218,16 +221,15 @@ class VotingController extends BaseController {
       log(currenVotingList.length.toString(), name: 'Filter List');
       await _setTopFiveReport();
       await _setPopularityReport();
-      setState(States.completed(allVotingList));
+      setState(States.completed(currenVotingList));
     } else {
       setState(States.loading(Constants.loading));
       currenVotingList = allVotingList;
       selectDateTime = null;
       await _setTopFiveReport();
       await _setPopularityReport();
-      setState(States.completed(allVotingList));
+      setState(States.completed(currenVotingList));
     }
-    notifyListeners();
   }
 
   bool _compareDates(DateTime a, b) {

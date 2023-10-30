@@ -16,6 +16,8 @@ abstract class Repository {
   Future<Either<String, String>> signOut();
   Future<Either<String, String>> addCharacter(
       AddCharacterRequest request, File? image, String id, String? myImage);
+  Future<Either<String, String>> updateCharacter(
+      AddCharacterRequest request, File? image, String id, String? myImage);
   Future<String?> addImage(File image);
   Future<Either<String, List<DisneyCharacter>>> getCharacters();
   Future<Either<String, List<Voting>>> getVotes();
@@ -114,6 +116,33 @@ class RepoImpl implements Repository {
             .collection(Constants.charRef)
             .doc(request.id)
             .set(request.toMap());
+        return const Right('Character Added Successfully');
+      } catch (err) {
+        return Left(err.toString());
+      }
+    } else {
+      log('Url is empty');
+
+      return const Left('Url is Empty');
+    }
+  }
+
+  @override
+  Future<Either<String, String>> updateCharacter(AddCharacterRequest request,
+      File? image, String? id, String? myImage) async {
+    if (id != null) {
+      log(id);
+      request = request.copyWith(id: id, timestamp: int.parse(id));
+    }
+    String? url = image == null ? myImage : await addImage(image);
+    if (url != null) {
+      request = request.copyWith(image: url);
+      try {
+        await _firestore.collection(Constants.charRef).doc(request.id).update({
+          'char-image': request.image,
+          'char-name': request.name,
+          'char-desc': request.desc,
+        });
         return const Right('Character Added Successfully');
       } catch (err) {
         return Left(err.toString());

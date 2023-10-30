@@ -29,6 +29,8 @@ class _UpdateCharacterState extends State<UpdateCharacter> {
 
   @override
   void initState() {
+    _name = TextEditingController();
+    _desc = TextEditingController();
     _controller = context.read<CharacterController>();
     _controller.init();
     Future.delayed(Duration.zero, () {
@@ -41,8 +43,8 @@ class _UpdateCharacterState extends State<UpdateCharacter> {
     await _controller.getCharacterById(widget.id!);
     if (_controller.states.status == Status.completed) {
       log(_controller.states.status.toString());
-      _name = TextEditingController(text: _controller.disneyCharacter!.name!);
-      _desc = TextEditingController(text: _controller.disneyCharacter!.desc!);
+      _name.text = _controller.disneyCharacter!.name!;
+      _desc.text = _controller.disneyCharacter!.desc!;
       _name.addListener(() {
         _controller.request = _controller.request.copyWith(name: _name.text);
       });
@@ -147,7 +149,7 @@ class _UpdateCharacterState extends State<UpdateCharacter> {
     }
 
     _formKey.currentState!.save();
-    await _controller.addCharacter(
+    await _controller.updateCharacter(
         widget.id, _controller.disneyCharacter!.image);
 
     if (_controller.states.status == Status.completed) {

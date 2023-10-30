@@ -88,6 +88,24 @@ class CharacterController extends BaseController {
     }
   }
 
+  updateCharacter([String? id, String? myImage]) async {
+    setState(States.buttonLoading(Constants.loading));
+    _setIdAndTimestamp();
+    final result = await _repository.updateCharacter(
+        request, image, id ?? request.id, myImage);
+    if (result.isRight()) {
+      log('Right');
+      String success = result.asRight();
+      _resetValues();
+      setState(States.completed(success));
+    } else {
+      log('Left');
+
+      String failure = result.asLeft();
+      setState(States.error(failure));
+    }
+  }
+
   getCharacterById(String id) async {
     setState(States.loading(Constants.loading));
     final result = await _repository.getCharactersById(id);
